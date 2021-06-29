@@ -1,25 +1,41 @@
+//Parent element to store 
 const taskContainer = document.querySelector(".task_container");
-console.log(taskContainer);
 
-const newCard = ({imageUrl,taskDescription,taskTitle,taskType,id}) => 
+//Global store
+const globalStore = [];
+
+const newCard = ({ imageUrl, taskDescription, taskTitle, taskType, id }) =>
     `<div class="col-md-4 col-sd-6" id=${id}>
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-outline-success"><i class="fas fa-pencil-alt"></i></button>
-                            <button type="button" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <img src=${imageUrl} alt="image" class="card-img-top"/>
-                        <div class="card-body">
-                            <h5 class="card-title">${taskTitle}</h5>
-                            <p class="card-text">${taskDescription}</p>
-                            <span class="badge bg-primary">${taskType}</span>
-                        </div>
-                        <div class="card-footer text-muted">
-                            <button type="button" class="btn btn-outline-primary float-end">Open Task</button>
-                        </div>
-                    </div>
-                </div>`
+        <div class="card">
+            <div class="card-header d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-outline-success"><i class="fas fa-pencil-alt"></i></button>
+                <button type="button" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></button>
+            </div>
+            <img src=${imageUrl} alt="image" class="card-img-top"/>
+            <div class="card-body">
+                <h5 class="card-title">${taskTitle}</h5>
+                <p class="card-text">${taskDescription}</p>
+                <span class="badge bg-primary">${taskType}</span>
+            </div>
+            <div class="card-footer text-muted">
+                <button type="button" class="btn btn-outline-primary float-end">Open Task</button>
+            </div>
+        </div>
+    </div>`;
 
+const loadInitialTaskCards = () => {
+    const getInitialData = localStorage.getItem("tasky");
+
+    if (!getInitialData) return;
+    
+    const { cards } = JSON.parse(getInitialData);
+    cards.map((cardObject) => {
+        const createNewCard = newCard(cardObject);
+        taskContainer.insertAdjacentHTML("beforeend", createNewCard);
+        globalStore.push(cardObject);
+    });
+
+}    
 const saveChanges = () => {
     const taskData = {
       id: `${Date.now()}`,
@@ -31,4 +47,8 @@ const saveChanges = () => {
     const createNewCard = newCard(taskData);
 
     taskContainer.insertAdjacentHTML("beforeend", createNewCard);
+
+    globalStore.push(taskData);
+    localStorage.setItem("tasky", JSON.stringify({ cards: globalStore }));
+    
 }
